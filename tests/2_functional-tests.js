@@ -82,8 +82,7 @@ suite("Functional Tests", function () {
             .send({})
             .end(function (err, res) {
               assert.equal(res.status, 200);
-              assert.property(res.body, "error");
-              assert.equal(res.body.error, "missing required field title");
+              assert.equal(res.text, "missing required field title");
               done();
             });
         });
@@ -114,8 +113,7 @@ suite("Functional Tests", function () {
           .get(`/api/books/${nonExistingBookId}`)
           .end(function (err, res) {
             assert.equal(res.status, 200);
-            assert.property(res.body, "error");
-            assert.equal(res.body.error, "no book exists");
+            assert.equal(res.text, "no book exists");
             done();
           });
       });
@@ -159,8 +157,7 @@ suite("Functional Tests", function () {
             .send({})
             .end(function (err, res) {
               assert.equal(res.status, 200);
-              assert.property(res.body, "error");
-              assert.equal(res.body.error, "missing required field comment");
+              assert.equal(res.text, "missing required field comment");
               done();
             });
         });
@@ -174,8 +171,7 @@ suite("Functional Tests", function () {
             .send({ comment: "Test Comment" })
             .end(function (err, res) {
               assert.equal(res.status, 200);
-              assert.property(res.body, "error");
-              assert.equal(res.body.error, "no book exists");
+              assert.equal(res.text, "no book exists");
               done();
             });
         });
@@ -189,8 +185,7 @@ suite("Functional Tests", function () {
           .delete(`/api/books/${existingBookId}`)
           .end(function (err, res) {
             assert.equal(res.status, 200);
-            assert.property(res.body, "message");
-            assert.equal(res.body.message, "delete successful");
+            assert.equal(res.text, "delete successful");
             done();
           });
       });
@@ -202,8 +197,7 @@ suite("Functional Tests", function () {
           .delete(`/api/books/${nonExistingBookId}`)
           .end(function (err, res) {
             assert.equal(res.status, 200);
-            assert.property(res.body, "error");
-            assert.equal(res.body.error, "no book exists");
+            assert.equal(res.text, "no book exists");
             done();
           });
       });

@@ -30,7 +30,7 @@ module.exports = function (app) {
     .post(async function (req, res) {
       let title = req.body.title;
       if (!title) {
-        return res.json({ error: "missing required field title" });
+        return res.send("missing required field title");
       }
 
       const book = await Book.create({ title });
@@ -43,7 +43,7 @@ module.exports = function (app) {
     .delete(async function (req, res) {
       //if successful response will be 'complete delete successful'
       await Book.deleteMany({});
-      res.json({ message: "complete delete successful" });
+      res.send("complete delete successful");
     });
 
   app
@@ -53,7 +53,7 @@ module.exports = function (app) {
       //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
       const book = await Book.findById(bookid);
       if (!book) {
-        return res.json({ error: "no book exists" });
+        return res.send("no book exists");
       }
       res.json(book);
     })
@@ -63,11 +63,11 @@ module.exports = function (app) {
       let comment = req.body.comment;
       //json res format same as .get
       if (!comment) {
-        return res.json({ error: "missing required field comment" });
+        return res.send("missing required field comment");
       }
       const book = await Book.findById(bookid);
       if (!book) {
-        return res.json({ error: "no book exists" });
+        return res.send("no book exists");
       }
 
       book.comments.push(comment);
@@ -80,9 +80,9 @@ module.exports = function (app) {
       //if successful response will be 'delete successful'
       const book = await Book.findById(bookid);
       if (!book) {
-        return res.json({ error: "no book exists" });
+        return res.send("no book exists");
       }
       await book.deleteOne();
-      res.json({ message: "delete successful" });
+      res.send("delete successful");
     });
 };
