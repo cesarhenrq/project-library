@@ -59,11 +59,29 @@ suite("Functional Tests", function () {
       "POST /api/books with title => create book object/expect book object",
       function () {
         test("Test POST /api/books with title", function (done) {
-          //done();
+          chai
+            .request(server)
+            .post("/api/books")
+            .send({ title: "Test Book" })
+            .end(function (err, res) {
+              assert.equal(res.status, 200);
+              assert.property(res.body, "_id");
+              assert.property(res.body, "title");
+              done();
+            });
         });
 
         test("Test POST /api/books with no title given", function (done) {
-          //done();
+          chai
+            .request(server)
+            .post("/api/books")
+            .send({})
+            .end(function (err, res) {
+              assert.equal(res.status, 200);
+              assert.property(res.body, "error");
+              assert.equal(res.body.error, "missing required field title");
+              done();
+            });
         });
       }
     );

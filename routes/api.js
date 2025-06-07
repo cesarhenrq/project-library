@@ -27,9 +27,17 @@ module.exports = function (app) {
       res.json(booksResponse);
     })
 
-    .post(function (req, res) {
+    .post(async function (req, res) {
       let title = req.body.title;
-      //response will contain new book object including atleast _id and title
+      if (!title) {
+        return res.json({ error: "missing required field title" });
+      }
+
+      const book = await Book.create({ title });
+      res.json({
+        _id: book._id,
+        title: book.title,
+      });
     })
 
     .delete(function (req, res) {
