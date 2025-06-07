@@ -184,11 +184,28 @@ suite("Functional Tests", function () {
 
     suite("DELETE /api/books/[id] => delete book object id", function () {
       test("Test DELETE /api/books/[id] with valid id in db", function (done) {
-        //done();
+        chai
+          .request(server)
+          .delete(`/api/books/${existingBookId}`)
+          .end(function (err, res) {
+            assert.equal(res.status, 200);
+            assert.property(res.body, "message");
+            assert.equal(res.body.message, "delete successful");
+            done();
+          });
       });
 
       test("Test DELETE /api/books/[id] with  id not in db", function (done) {
-        //done();
+        const nonExistingBookId = new mongoose.Types.ObjectId();
+        chai
+          .request(server)
+          .delete(`/api/books/${nonExistingBookId}`)
+          .end(function (err, res) {
+            assert.equal(res.status, 200);
+            assert.property(res.body, "error");
+            assert.equal(res.body.error, "no book exists");
+            done();
+          });
       });
     });
   });
