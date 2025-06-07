@@ -11,6 +11,7 @@ const chai = require("chai");
 const assert = chai.assert;
 const server = require("../server");
 const { Book } = require("../models");
+const mongoose = require("mongoose");
 
 chai.use(chaiHttp);
 
@@ -20,9 +21,12 @@ suite("Functional Tests", function () {
    * Each test should completely test the response of the API end-point including response status code!
    */
 
+  let existingBookId;
+
   before(async function () {
     await Book.deleteMany({});
-    await Book.create({ title: "Test Book" });
+    const book = await Book.create({ title: "Test Book" });
+    existingBookId = book._id;
   });
 
   test("#example Test GET /api/books", function (done) {
@@ -104,11 +108,30 @@ suite("Functional Tests", function () {
 
     suite("GET /api/books/[id] => book object with [id]", function () {
       test("Test GET /api/books/[id] with id not in db", function (done) {
-        //done();
+        const nonExistingBookId = new mongoose.Types.ObjectId();
+        chai
+          .request(server)
+          .get(`/api/books/${nonExistingBookId}`)
+          .end(function (err, res) {
+            assert.equal(res.status, 200);
+            assert.property(res.body, "error");
+            assert.equal(res.body.error, "no book exists");
+            done();
+          });
       });
 
       test("Test GET /api/books/[id] with valid id in db", function (done) {
-        //done();
+        chai
+          .request(server)
+          .get(`/api/books/${existingBookId}`)
+          .end(async function (err, res) {
+            assert.equal(res.status, 200);
+            const book = await Book.findById(existingBookId);
+            assert.equal(book.title, res.body.title);
+            assert.equal(book._id, res.body._id);
+            assert.deepEqual(book.comments, res.body.comments);
+            done();
+          });
       });
     });
 
