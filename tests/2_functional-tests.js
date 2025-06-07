@@ -139,15 +139,45 @@ suite("Functional Tests", function () {
       "POST /api/books/[id] => add comment/expect book object with id",
       function () {
         test("Test POST /api/books/[id] with comment", function (done) {
-          //done();
+          chai
+            .request(server)
+            .post(`/api/books/${existingBookId}`)
+            .send({ comment: "Test Comment" })
+            .end(async function (err, res) {
+              assert.equal(res.status, 200);
+              const book = await Book.findById(existingBookId);
+              assert.equal(book.comments.length, 1);
+              assert.equal(book.comments[0], "Test Comment");
+              done();
+            });
         });
 
         test("Test POST /api/books/[id] without comment field", function (done) {
-          //done();
+          chai
+            .request(server)
+            .post(`/api/books/${existingBookId}`)
+            .send({})
+            .end(function (err, res) {
+              assert.equal(res.status, 200);
+              assert.property(res.body, "error");
+              assert.equal(res.body.error, "missing required field comment");
+              done();
+            });
         });
 
         test("Test POST /api/books/[id] with comment, id not in db", function (done) {
-          //done();
+          const nonExistingBookId = new mongoose.Types.ObjectId();
+
+          chai
+            .request(server)
+            .post(`/api/books/${nonExistingBookId}`)
+            .send({ comment: "Test Comment" })
+            .end(function (err, res) {
+              assert.equal(res.status, 200);
+              assert.property(res.body, "error");
+              assert.equal(res.body.error, "no book exists");
+              done();
+            });
         });
       }
     );
